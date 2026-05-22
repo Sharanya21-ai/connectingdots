@@ -3,7 +3,7 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven'
+        maven 'maven'
         jdk 'JDK21'
     }
 
@@ -22,6 +22,12 @@ pipeline {
             }
         }
 
+        stage('Deploy to Tomcat') {
+            steps {
+                sh 'sudo cp target/*.war /var/lib/tomcat10/webapps/'
+            }
+        }
+
     }
 
     post {
@@ -29,7 +35,14 @@ pipeline {
         success {
             emailext (
                 subject: "SUCCESS: ${JOB_NAME} #${BUILD_NUMBER}",
-                body: "Tic Tac Toe Build Successful!",
+                body: """
+Build Successful!
+
+Tic Tac Toe Game deployed successfully.
+
+Open Game:
+http://localhost:8091/tic-tac-toe-1.0-SNAPSHOT/
+""",
                 to: "sharanyajagannath214@gmail.com"
             )
         }
