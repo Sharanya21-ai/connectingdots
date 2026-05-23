@@ -1,13 +1,13 @@
-# Use Tomcat 10 with Java 21 as the base environment
-FROM tomcat:10.1-jdk21
+# Use a lightweight web server meant for HTML/CSS/JS
+FROM nginx:alpine
 
-# Clean out default Tomcat apps to prevent route conflicts
-RUN rm -rf /usr/local/tomcat/webapps/*
+# Clean out default landing pages
+RUN rm -rf /usr/share/nginx/html/*
 
-# Copy your built war file and rename it to ROOT.war
-# This lets your friend load the game at the main domain without typing /puzzle/
-COPY target/photo-puzzle.war /usr/local/tomcat/webapps/ROOT.war
+# Copy your local game files straight into Nginx's public folder
+COPY index.html style.css script.js /usr/share/nginx/html/
 
-EXPOSE 8080
+# Nginx naturally runs on port 80
+EXPOSE 80
 
-CMD ["catalina.sh", "run"]
+CMD ["nginx", "-g", "daemon off;"]
