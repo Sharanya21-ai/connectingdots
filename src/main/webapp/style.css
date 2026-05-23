@@ -1,137 +1,131 @@
+:root {
+    --dot-color: #333;
+    --line-hover: #ddd;
+    --p1-color: #3498db;
+    --p2-color: #e74c3c;
+    --bg-color: #f4f6f9;
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    text-align: center;
-    background-color: #eef2f3;
-    margin: 0;
-    padding: 20px;
-}
-
-h1 { 
-    margin-bottom: 5px; 
-    color: #333; 
-}
-
-p { 
-    color: #666; 
-    margin-top: 0; 
-    font-size: 15px;
-}
-
-/* Centers the board and the sidebar information panels side-by-side */
-.game-container {
+    background-color: var(--bg-color);
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 30px;
-    margin: 25px auto;
-    max-width: 600px;
+    height: 100vh;
+    margin: 0;
 }
 
-/* Perfect alignment grid for a 3x3 layout including border spacing */
-#board {
-    width: 306px;
-    height: 306px;
-    background-color: #ccc;
-    border: 4px solid #333;
-    display: grid;
-    grid-template-columns: repeat(3, 100px);
-    grid-template-rows: repeat(3, 100px);
-    gap: 2px;
-}
-
-/* The puzzle pieces */
-.tile {
-    width: 100px;
-    height: 100px;
-    border: 1px solid #fff;
-    box-sizing: border-box;
-    cursor: grab;
-    background-size: 300px 300px; /* Forces full image scaling across total board layout */
-}
-
-.tile:active {
-    cursor: grabbing;
-}
-
-/* Styling for the empty target square slot */
-.blank {
-    background-color: #2c3e50 !important;
-    background-image: none !important;
-    cursor: default;
-}
-
-/* Control Panel Container */
-.stats-panel {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    align-items: flex-start;
-}
-
-/* Moves Counter Card */
-.stat-box {
-    background: #fff;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+.game-container {
     text-align: center;
-    width: 140px;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
 }
 
-.stat-box h3 { 
-    margin: 0; 
-    font-size: 13px; 
-    color: #777; 
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+h1 {
+    margin-top: 0;
+    color: #2c3e50;
 }
 
-.stat-box span { 
-    font-size: 36px; 
-    font-weight: bold; 
-    color: #c0392b; 
+.scoreboard {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    font-weight: bold;
 }
 
-/* Action Button */
-button {
-    padding: 12px 20px;
-    font-size: 15px;
-    background-color: #27ae60;
+.player {
+    padding: 8px 16px;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+}
+
+.player-1.active { background-color: var(--p1-color); color: white; }
+.player-2.active { background-color: var(--p2-color); color: white; }
+
+.turn-indicator {
+    margin-bottom: 20px;
+    font-weight: 600;
+    color: #7f8c8d;
+}
+
+.board {
+    display: inline-block;
+    margin: 0 auto;
+}
+
+/* Row layouts */
+.row {
+    display: flex;
+    align-items: center;
+}
+
+/* Game elements */
+.dot {
+    width: 12px;
+    height: 12px;
+    background-color: var(--dot-color);
+    border-radius: 50%;
+    z-index: 2;
+}
+
+.line {
+    background-color: transparent;
+    transition: background-color 0.2s;
+    cursor: pointer;
+    z-index: 1;
+}
+
+.line:not(.filled):hover {
+    background-color: var(--line-hover);
+}
+
+.line.h-line {
+    width: 60px;
+    height: 12px;
+    margin: 0 -6px; /* Overlap nicely with dots */
+}
+
+.line.v-line {
+    width: 12px;
+    height: 60px;
+    margin: -6px 0;
+}
+
+.line.filled.p1 { background-color: var(--p1-color); cursor: default; }
+.line.filled.p2 { background-color: var(--p2-color); cursor: default; }
+
+.box {
+    width: 60px;
+    height: 60px;
+    margin: -6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 1.5rem;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+.box.p1 { background-color: rgba(52, 152, 219, 0.4); color: #2980b9; }
+.box.p2 { background-color: rgba(231, 76, 60, 0.4); color: #c0392b; }
+
+#reset-btn {
+    margin-top: 25px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    background-color: #2cc36b;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-weight: bold;
-    box-shadow: 0 3px 5px rgba(0,0,0,0.15);
-    transition: background 0.2s ease;
 }
 
-button:hover { 
-    background-color: #219653; 
-}
-
-/* Game Status Text (Win/Lose Message) */
-#game-status { 
-    font-size: 22px; 
-    font-weight: bold; 
-    margin: 5px 0; 
-}
-
-/* Mini Reference Target Frame */
-.reference-container {
-    margin-top: 25px;
-}
-
-.reference-container h3 {
-    font-size: 14px;
-    color: #555;
-    margin-bottom: 8px;
-}
-
-.reference-container img {
-    border: 3px solid #333;
-    border-radius: 6px;
-    width: 110px;
-    height: 110px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+#reset-btn:hover {
+    background-color: #27ae60;
 }
