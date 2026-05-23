@@ -1,15 +1,9 @@
 pipeline {
     agent any
 
-    tools {
-        maven 'Maven'
-        jdk 'JDK21'
-    }
-
     environment {
-        // Hardcoded your specific Docker Hub profile details
         DOCKER_HUB_USER = 'hrishi2104'
-        IMAGE_NAME      = 'photo-puzzle'
+        IMAGE_NAME      = 'connecting-dots'
         IMAGE_TAG       = "${BUILD_NUMBER}"
     }
 
@@ -20,25 +14,21 @@ pipeline {
             }
         }
 
-        stage('Build') {
-            steps {
-                sh 'mvn clean package'
-            }
-        }
+        // Note: Removed the Maven 'Build' stage since static web assets 
+        // (HTML/CSS/JS) compile instantly inside the browser directly.
 
         stage('Build & Push Docker Image') {
             steps {
-                // This binds your secure Jenkins credentials to environment variables
                 withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'REGISTRY_USER', passwordVariable: 'REGISTRY_PASS')]) {
                     
-                    // 1. Securely log into your Docker Hub account
+                    // 1. Log into Docker Hub account
                     sh "echo ${REGISTRY_PASS} | docker login -u ${REGISTRY_USER} --password-stdin"
                     
                     // 2. Build the image with a unique build number tag and a 'latest' tag
                     sh "docker build -t ${DOCKER_HUB_USER}/${IMAGE_NAME}:${IMAGE_TAG} ."
                     sh "docker build -t ${DOCKER_HUB_USER}/${IMAGE_NAME}:latest ."
                     
-                    // 3. Push both versions up to Docker Hub so your friend can see them
+                    // 3. Push both versions up to Docker Hub
                     sh "docker push ${DOCKER_HUB_USER}/${IMAGE_NAME}:${IMAGE_TAG}"
                     sh "docker push ${DOCKER_HUB_USER}/${IMAGE_NAME}:latest"
                 }
@@ -48,7 +38,7 @@ pipeline {
 
     post {
         always {
-            // Cleans up local image cache on your laptop to prevent running out of disk space
+            // Cleans up local image cache to prevent running out of disk space
             sh "docker rmi -f ${DOCKER_HUB_USER}/${IMAGE_NAME}:${IMAGE_TAG} || true"
             sh "docker rmi -f ${DOCKER_HUB_USER}/${IMAGE_NAME}:latest || true"
         }
@@ -58,11 +48,11 @@ pipeline {
                 body: """
 Build & Push Successful!
 
-Your Photo Puzzle Game has been pushed to Docker Hub under:
+Your Connecting Dots Game has been pushed to Docker Hub under:
 ${DOCKER_HUB_USER}/${IMAGE_NAME}:latest
 
-Your friend can pull and run it using:
-docker run -d -p 8085:8080 ${DOCKER_HUB_USER}/${IMAGE_NAME}:latest
+You can pull and run it using:
+docker run -d -p 8085:80 ${DOCKER_HUB_USER}/${IMAGE_NAME}:latest
 """,
                 to: "djhrishikesh2003@gmail.com"
             )
