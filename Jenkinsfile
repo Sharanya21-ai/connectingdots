@@ -1,5 +1,4 @@
 pipeline {
-
     agent any
 
     tools {
@@ -8,11 +7,9 @@ pipeline {
     }
 
     stages {
-
         stage('Checkout') {
             steps {
-                git branch: 'main',
-                url: 'https://github.com/Sharanya21-ai/tictactoe.git'
+                git branch: 'main', url: 'https://github.com/Sharanya21-ai/tictactoe.git'
             }
         }
 
@@ -24,27 +21,24 @@ pipeline {
 
         stage('Deploy to Tomcat') {
             steps {
-                sh '''
-                sudo cp target/*.war /var/lib/tomcat10/webapps/
-                sudo systemctl restart tomcat10
-                '''
+                // Removed 'sudo'. This copies the war file directly and renames it to tictactoe.war
+                sh 'cp target/tictactoe.war /var/lib/tomcat10/webapps/tictactoe.war'
             }
         }
     }
 
     post {
-
         success {
             emailext(
                 subject: "SUCCESS: ${JOB_NAME} #${BUILD_NUMBER}",
-                body: '''
+                body: """
 Build Successful!
 
-Tic Tac Toe deployed successfully.
+Tic Tac Toe deployed successfully to your local Tomcat server.
 
-Open:
-http://localhost:8091/tic-tac-toe-1.0-SNAPSHOT/
-''',
+Play the game here:
+http://localhost:8080/tictactoe/
+""",
                 to: 'sharanyajagannath214@gmail.com'
             )
         }
@@ -52,7 +46,7 @@ http://localhost:8091/tic-tac-toe-1.0-SNAPSHOT/
         failure {
             emailext(
                 subject: "FAILED: ${JOB_NAME} #${BUILD_NUMBER}",
-                body: 'Build Failed!',
+                body: 'Build Failed! Please check the Jenkins console logs to find the issue.',
                 to: 'sharanyajagannath214@gmail.com'
             )
         }
